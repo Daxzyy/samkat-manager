@@ -585,7 +585,7 @@ async function ghCommits() {
 }
 
 function parseDbFile(content) {
-  const match = content.match(/export\s+default\s+(\[.*\])/)
+  const match = content.match(/export\s+default\s+(\[[\s\S]*\])/)
   if (!match) throw new Error('Format file db.js tidak dikenali')
   const arr = JSON.parse(match[1])
   return arr.map(w => w.trim().toLowerCase()).filter(Boolean)
