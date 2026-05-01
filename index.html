@@ -182,7 +182,7 @@
         </div>
         <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">SK Admin Panel</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:24px;">Word Manager</div>
-        <input id="pin-input" type="password" class="input-field" placeholder="Masukkan access key..." style="margin-bottom:12px;text-align:center;letter-spacing:4px;font-family:'Space Mono',monospace;" onkeydown="if(event.key==='Enter')tryLogin()">
+        <div style="position:relative;margin-bottom:12px;">   <input id="pin-input" type="password" class="input-field" placeholder="Masukkan access key..." style="text-align:center;letter-spacing:4px;font-family:'Space Mono',monospace;padding-right:44px;" onkeydown="if(event.key==='Enter')tryLogin()">   <button onclick="togglePin()" id="pin-toggle" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;" title="Tampilkan/sembunyikan">     <svg id="pin-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>   </button> </div>
         <button class="btn btn-orange" style="width:100%;justify-content:center;" onclick="tryLogin()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Masuk
@@ -219,9 +219,9 @@
     </div>
   </header>
 
-  <div style="display:flex;gap:0;flex:1;min-height:0;overflow:hidden;">
-    <nav style="width:200px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 8px;gap:2px;">
-      <button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;width:100%;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+<div style="display:flex;gap:0;flex:1;min-height:0;overflow:hidden;flex-direction:column;">
+    <nav style="width:100%;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:row;padding:6px 8px;gap:2px;overflow-x:auto;flex-shrink:0;flex-wrap:nowrap;">
+      <button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;"
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Kata
         <span id="nav-count-words" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(249,115,22,0.15);color:var(--accent);padding:1px 7px;border-radius:4px;display:none;"></span>
@@ -244,9 +244,8 @@
         <span id="nav-count-history" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(59,130,246,0.15);color:#60a5fa;padding:1px 7px;border-radius:4px;display:none;"></span>
       </button>
 
-      <div style="flex:1;"></div>
-
-      <div style="padding:10px 12px;background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.15);border-radius:8px;">
+<div style="display:none;"></div>
+      <div style="display:none;">
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Database</div>
         <div style="font-size:20px;font-weight:800;color:#fff;font-family:'Space Mono',monospace;" id="stat-total">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px;">total kata</div>
@@ -305,7 +304,7 @@
         </div>
         <div class="card" style="overflow:hidden;">
           <div style="padding:10px 16px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>
+            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>             <span id="stat-total-inline" style="font-size:12px;color:var(--accent);font-weight:700;font-family:'Space Mono',monospace;"></span>
             <span style="font-size:11px;color:var(--muted);">klik kata untuk salin</span>
           </div>
           <div id="word-list" style="max-height:calc(100vh - 260px);overflow-y:auto;"></div>
@@ -619,7 +618,7 @@ async function loadDatabase() {
 function updateRepoStatus(state) {
   const el = document.getElementById('repo-status')
   const states = {
-    ok: { dot: 'dot-valid', text: cfg.owner + '/' + cfg.repo, color: '#4ade80' },
+    ok: { dot: 'dot-valid', text: 'Terhubung', color: '#4ade80' },
     err: { dot: 'dot-invalid', text: 'Gagal terhubung', color: '#f87171' },
     loading: { dot: 'dot-pending', text: 'Menghubungkan...', color: 'var(--muted)' }
   }
@@ -631,6 +630,8 @@ function updateStats() {
   document.getElementById('stat-total').textContent = database.length.toLocaleString()
   document.getElementById('stat-added').textContent = '+' + sessionStats.added
   document.getElementById('stat-removed').textContent = '-' + sessionStats.removed
+  const inl = document.getElementById('stat-total-inline')
+  if (inl) inl.textContent = database.length.toLocaleString() + ' kata'
 }
 
 function filterWords() { renderWordList() }
@@ -961,7 +962,7 @@ function closeModal() {
   confirmCb = null
 }
 
-document.getElementById('pin-input').focus()
+document.getElementById('pin-input').focus() function togglePin() {   const inp = document.getElementById('pin-input')   const eye = document.getElementById('pin-eye')   if (inp.type === 'password') {     inp.type = 'text'     eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'   } else {     inp.type = 'password'     eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'   } }
 </script>
 </body>
 </html>
