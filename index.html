@@ -551,7 +551,16 @@ async function ghGet(path) {
     headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
   })
   if (!r.ok) throw new Error(`Gagal terhubung ${r.status}: ${r.statusText}`)
-  return r.json()
+  const meta = await r.json()
+  if (meta.encoding === 'none' || meta.content === '') {
+    const blobR = await fetch(meta.git_url + '?recursive=0', {
+      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
+    })
+    if (!blobR.ok) throw new Error(`Gagal ambil blob ${blobR.status}`)
+    const blob = await blobR.json()
+    return { ...meta, content: blob.content, encoding: blob.encoding, sha: meta.sha }
+  }
+  return meta
 }
 
 async function ghPut(path, content, sha, message) {
