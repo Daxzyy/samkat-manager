@@ -304,7 +304,7 @@
         </div>
         <div class="card" style="overflow:hidden;">
           <div style="padding:10px 16px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>             <span id="stat-total-inline" style="font-size:12px;color:var(--accent);font-weight:700;font-family:'Space Mono',monospace;"></span>
+            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>             <span id="stat-total-inline" style="display:none;"></span>
             <span style="font-size:11px;color:var(--muted);">klik kata untuk salin</span>
           </div>
           <div id="word-list" style="max-height:calc(100vh - 260px);overflow-y:auto;"></div>
@@ -645,7 +645,7 @@ function renderWordList() {
   const el = document.getElementById('word-list')
   const label = document.getElementById('word-count-label')
   if (!el) return
-  label.textContent = words.length.toLocaleString() + ' kata ditampilkan'
+  label.textContent = words.length.toLocaleString() + ' kata'
   if (words.length === 0) {
     el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;">Tidak ada kata ditemukan</div>'
     return
@@ -891,14 +891,9 @@ async function loadHistory() {
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:3px;word-break:break-word;">${c.commit.message}</div>
           <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;">
-            <span>${c.commit.author.name}</span>
-            <span>·</span>
-            <span>${new Date(c.commit.author.date).toLocaleString('id-ID')}</span>
+            <span>${new Date(c.commit.author.date).toLocaleString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
           </div>
         </div>
-        <a href="${c.html_url}" target="_blank" style="flex-shrink:0;color:var(--muted);transition:color 0.12s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='var(--muted)'" title="Lihat detail">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
       </div>
     `).join('')
   } catch (e) {
