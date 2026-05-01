@@ -577,7 +577,7 @@ async function ghCommits() {
 }
 
 function parseDbFile(content) {
-  const match = content.match(/export\s+default\s+(\[[\s\S]*\])/)
+  const match = content.match(/export\s+default\s+(\[.*\])/)
   if (!match) throw new Error('Format file db.js tidak dikenali')
   const arr = JSON.parse(match[1])
   return arr.map(w => w.trim().toLowerCase()).filter(Boolean)
@@ -594,7 +594,7 @@ async function loadDatabase() {
   try {
     const data = await ghGet(cfg.filePath)
     dbSha = data.sha
-    const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
+    const content = atob(data.content.replace(/\n/g, ''))
     database = parseDbFile(content)
     updateRepoStatus('ok')
     renderWordList()
