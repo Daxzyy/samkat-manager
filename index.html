@@ -221,24 +221,24 @@
 
 <div style="display:flex;gap:0;flex:1;min-height:0;overflow:hidden;flex-direction:column;">
     <nav style="width:100%;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:row;padding:6px 8px;gap:2px;overflow-x:auto;flex-shrink:0;flex-wrap:nowrap;">
-      <button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;"
+<button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Kata
         <span id="nav-count-words" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(249,115,22,0.15);color:var(--accent);padding:1px 7px;border-radius:4px;display:none;"></span>
       </button>
-      <button class="nav-btn" data-tab="add" onclick="switchTab('add')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;width:100%;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+      <button class="nav-btn" data-tab="add" onclick="switchTab('add')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
         Tambah Kata
       </button>
-      <button class="nav-btn" data-tab="delete" onclick="switchTab('delete')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;width:100%;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+      <button class="nav-btn" data-tab="delete" onclick="switchTab('delete')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         Hapus Kata
       </button>
-      <button class="nav-btn" data-tab="bulk" onclick="switchTab('bulk')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;width:100%;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+      <button class="nav-btn" data-tab="bulk" onclick="switchTab('bulk')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         Edit Massal
       </button>
-      <button class="nav-btn" data-tab="history" onclick="switchTab('history')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;width:100%;text-align:left;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+      <button class="nav-btn" data-tab="history" onclick="switchTab('history')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Riwayat Perubahan
         <span id="nav-count-history" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(59,130,246,0.15);color:#60a5fa;padding:1px 7px;border-radius:4px;display:none;"></span>
@@ -962,7 +962,18 @@ function closeModal() {
   confirmCb = null
 }
 
-document.getElementById('pin-input').focus() function togglePin() {   const inp = document.getElementById('pin-input')   const eye = document.getElementById('pin-eye')   if (inp.type === 'password') {     inp.type = 'text'     eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'   } else {     inp.type = 'password'     eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'   } }
+document.getElementById('pin-input').focus()
+function togglePin() {
+  const inp = document.getElementById('pin-input')
+  const eye = document.getElementById('pin-eye')
+  if (inp.type === 'password') {
+    inp.type = 'text'
+    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+  } else {
+    inp.type = 'password'
+    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
+  }
+}
 </script>
 </body>
 </html>
