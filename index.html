@@ -167,6 +167,8 @@
 
   .diff-add { background: rgba(34,197,94,0.08); border-left: 3px solid rgba(34,197,94,0.5); }
   .diff-remove { background: rgba(239,68,68,0.08); border-left: 3px solid rgba(239,68,68,0.5); }
+
+  #login-spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
 </style>
 </head>
 <body class="grid-bg">
@@ -185,6 +187,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Masuk
         </button>
+        <div id="login-spinner" style="margin-top:12px;"></div>
         <div id="pin-err" style="font-size:12px;color:#f87171;margin-top:10px;display:none;">Access key salah.</div>
       </div>
     </div>
@@ -463,16 +466,7 @@
 </div>
 
 <script>
-const ACCESS_KEY = typeof process !== 'undefined' && process.env ? (process.env.ADMIN_KEY || '') : ''
-
-const GITHUB_TOKEN = typeof process !== 'undefined' && process.env ? (process.env.GITHUB_TOKEN || '') : ''
-const GITHUB_OWNER = typeof process !== 'undefined' && process.env ? (process.env.GITHUB_OWNER || '') : ''
-const GITHUB_REPO = typeof process !== 'undefined' && process.env ? (process.env.GITHUB_REPO || '') : ''
-const DB_FILE_PATH = typeof process !== 'undefined' && process.env ? (process.env.DB_FILE_PATH || 'src/db.js') : 'src/db.js'
-
-let cfg = {
-  key: '', token: '', owner: '', repo: '', filePath: 'src/db.js'
-}
+let cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
 
 let database = []
 let dbSha = ''
@@ -483,47 +477,45 @@ let bulkPreviewData = null
 let sessionStats = { added: 0, removed: 0 }
 let historyData = []
 
-function tryLogin() {
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+async function tryLogin() {
   const pin = document.getElementById('pin-input').value.trim()
-  const stored = getEnvOrLocal('ADMIN_KEY', 'sk_admin_key')
-  if (!stored) {
-    if (!pin) { showPinErr('Access key kosong'); return }
-    localStorage.setItem('sk_admin_key', pin)
+  if (!pin) { showPinErr('Masukkan access key dulu'); return }
+
+  const errEl = document.getElementById('pin-err')
+  const spinner = document.getElementById('login-spinner')
+  errEl.style.display = 'none'
+  spinner.style.display = 'block'
+
+  try {
+    const res = await fetch('/api/config', {
+      headers: { 'x-admin-key': pin }
+    })
+
+    if (res.status === 403) {
+      showPinErr('Access key salah.')
+      spinner.style.display = 'none'
+      return
+    }
+    if (!res.ok) {
+      showPinErr('Server error: ' + res.status + '. Cek env vars di Vercel.')
+      spinner.style.display = 'none'
+      return
+    }
+
+    const data = await res.json()
     cfg.key = pin
-  } else {
-    if (pin && pin !== stored) { showPinErr('Access key salah.'); return }
-    cfg.key = stored || pin
+    cfg.token = data.token
+    cfg.owner = data.owner
+    cfg.repo = data.repo
+    cfg.filePath = data.filePath || 'src/db.js'
+
+    spinner.style.display = 'none'
+    enterApp()
+  } catch (e) {
+    showPinErr('Gagal terhubung ke server.')
+    spinner.style.display = 'none'
   }
-  cfg.token = getEnvOrLocal('GITHUB_TOKEN', 'sk_gh_token')
-  cfg.owner = getEnvOrLocal('GITHUB_OWNER', 'sk_gh_owner')
-  cfg.repo = getEnvOrLocal('GITHUB_REPO', 'sk_gh_repo')
-  cfg.filePath = getEnvOrLocal('DB_FILE_PATH', 'sk_gh_filepath') || 'src/db.js'
-
-  if (!cfg.token || !cfg.owner || !cfg.repo) {
-    promptConfig()
-    return
-  }
-  enterApp()
-}
-
-function getEnvOrLocal(envKey, localKey) {
-  return localStorage.getItem(localKey) || ''
-}
-
-function promptConfig() {
-  const token = prompt('GitHub Personal Access Token:')
-  if (!token) return
-  const owner = prompt('GitHub Username/Org:')
-  if (!owner) return
-  const repo = prompt('Nama Repo (misal: sambungkata-rblx):')
-  if (!repo) return
-  const filePath = prompt('Path file database (default: src/db.js):') || 'src/db.js'
-  localStorage.setItem('sk_gh_token', token)
-  localStorage.setItem('sk_gh_owner', owner)
-  localStorage.setItem('sk_gh_repo', repo)
-  localStorage.setItem('sk_gh_filepath', filePath)
-  cfg.token = token; cfg.owner = owner; cfg.repo = repo; cfg.filePath = filePath
-  enterApp()
 }
 
 function enterApp() {
@@ -537,20 +529,23 @@ function showPinErr(msg) {
   const el = document.getElementById('pin-err')
   el.textContent = msg
   el.style.display = 'block'
-  setTimeout(() => el.style.display = 'none', 3000)
+  setTimeout(() => el.style.display = 'none', 4000)
 }
 
 function logout() {
   database = []; addQueue = []; delQueue = []
+  cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
   document.getElementById('main-app').style.display = 'none'
   document.getElementById('lock-screen').style.display = 'flex'
   document.getElementById('pin-input').value = ''
 }
 
+// ─── LOADING ──────────────────────────────────────────────────────────────────
 function setLoading(show) {
   document.getElementById('loading-bar-wrap').style.display = show ? 'block' : 'none'
 }
 
+// ─── GITHUB API ───────────────────────────────────────────────────────────────
 async function ghGet(path) {
   const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`, {
     headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -581,6 +576,7 @@ async function ghCommits() {
   return r.json()
 }
 
+// ─── DATABASE ─────────────────────────────────────────────────────────────────
 function parseDbFile(content) {
   const match = content.match(/export\s+default\s+(\[[\s\S]*?\])/)
   if (!match) throw new Error('Format file db.js tidak dikenali')
@@ -629,9 +625,7 @@ function updateStats() {
   document.getElementById('stat-removed').textContent = '-' + sessionStats.removed
 }
 
-function filterWords() {
-  renderWordList()
-}
+function filterWords() { renderWordList() }
 
 function renderWordList() {
   const search = (document.getElementById('word-search')?.value || '').toLowerCase().trim()
@@ -677,17 +671,14 @@ function markForDelete(word) {
   }
 }
 
+// ─── ADD ──────────────────────────────────────────────────────────────────────
 function addWordToQueue() {
   const raw = document.getElementById('add-word-input').value
   const words = raw.split(/[,\n\s]+/).map(w => w.trim().toLowerCase()).filter(Boolean)
   const valid = words.filter(w => /^[a-z]+$/.test(w))
   const dupes = valid.filter(w => database.includes(w) || addQueue.includes(w))
   const toAdd = valid.filter(w => !database.includes(w) && !addQueue.includes(w))
-  if (toAdd.length) {
-    addQueue.push(...toAdd)
-    renderAddQueue()
-    toast(toAdd.length + ' kata ditambah ke daftar', 'ok')
-  }
+  if (toAdd.length) { addQueue.push(...toAdd); renderAddQueue(); toast(toAdd.length + ' kata ditambah ke daftar', 'ok') }
   if (dupes.length) toast(dupes.length + ' kata sudah ada di database', 'info')
   if (valid.length === 0) { toast('Format kata tidak valid (hanya huruf a-z)', 'err'); return }
   document.getElementById('add-word-input').value = ''
@@ -709,15 +700,8 @@ function renderAddQueue() {
   `).join('')
 }
 
-function removeFromAddQueue(word) {
-  addQueue = addQueue.filter(w => w !== word)
-  renderAddQueue()
-}
-
-function clearQueue() {
-  addQueue = []
-  renderAddQueue()
-}
+function removeFromAddQueue(word) { addQueue = addQueue.filter(w => w !== word); renderAddQueue() }
+function clearQueue() { addQueue = []; renderAddQueue() }
 
 async function commitAdd() {
   if (!addQueue.length) { toast('Daftar kosong', 'err'); return }
@@ -734,25 +718,21 @@ async function commitAdd() {
         await ghPut(cfg.filePath, content, dbSha, msg)
         sessionStats.added += addQueue.length
         database = newDb.sort()
-        addQueue = []
-        dbSha = ''
-        renderAddQueue()
-        renderWordList()
-        updateStats()
+        addQueue = []; dbSha = ''
+        renderAddQueue(); renderWordList(); updateStats()
         await loadDatabase()
         toast('Perubahan berhasil disimpan!', 'ok')
-      } catch (e) {
-        toast('Gagal menyimpan: ' + e.message, 'err')
-      }
+      } catch (e) { toast('Gagal menyimpan: ' + e.message, 'err') }
       setLoading(false)
     }
   )
 }
 
+// ─── DELETE ───────────────────────────────────────────────────────────────────
 function searchWordForDelete() {
   const q = document.getElementById('del-word-input').value.toLowerCase().trim()
   const el = document.getElementById('del-suggestions')
-  if (!q || q.length < 1) { el.innerHTML = ''; return }
+  if (!q) { el.innerHTML = ''; return }
   const matches = database.filter(w => w.includes(q)).slice(0, 20)
   el.innerHTML = matches.map(w => `
     <div class="word-chip chip-invalid" onclick="addToDelQueue('${w}')" style="cursor:pointer;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">${w}</div>
@@ -760,11 +740,7 @@ function searchWordForDelete() {
 }
 
 function addToDelQueue(word) {
-  if (!delQueue.includes(word)) {
-    delQueue.push(word)
-    renderDelQueue()
-    toast('"' + word + '" ditandai untuk dihapus', 'info')
-  }
+  if (!delQueue.includes(word)) { delQueue.push(word); renderDelQueue(); toast('"' + word + '" ditandai untuk dihapus', 'info') }
 }
 
 function renderDelQueue() {
@@ -783,15 +759,8 @@ function renderDelQueue() {
   `).join('')
 }
 
-function removeFromDelQueue(word) {
-  delQueue = delQueue.filter(w => w !== word)
-  renderDelQueue()
-}
-
-function clearDelQueue() {
-  delQueue = []
-  renderDelQueue()
-}
+function removeFromDelQueue(word) { delQueue = delQueue.filter(w => w !== word); renderDelQueue() }
+function clearDelQueue() { delQueue = []; renderDelQueue() }
 
 async function commitDelete() {
   if (!delQueue.length) { toast('Tidak ada kata yang ditandai', 'err'); return }
@@ -808,22 +777,17 @@ async function commitDelete() {
         const content = buildDbFile(newDb)
         await ghPut(cfg.filePath, content, dbSha, msg)
         sessionStats.removed += delQueue.length
-        database = newDb
-        delQueue = []
-        dbSha = ''
-        renderDelQueue()
-        renderWordList()
-        updateStats()
+        database = newDb; delQueue = []; dbSha = ''
+        renderDelQueue(); renderWordList(); updateStats()
         await loadDatabase()
         toast('Berhasil menghapus kata!', 'ok')
-      } catch (e) {
-        toast('Gagal menyimpan: ' + e.message, 'err')
-      }
+      } catch (e) { toast('Gagal menyimpan: ' + e.message, 'err') }
       setLoading(false)
     }
   )
 }
 
+// ─── BULK ─────────────────────────────────────────────────────────────────────
 function setBulkMode(mode) {
   bulkMode = mode
   const addBtn = document.getElementById('bulk-tab-add')
@@ -873,10 +837,7 @@ function previewBulk() {
   document.getElementById('bulk-preview').style.display = 'block'
 }
 
-async function commitBulk() {
-  previewBulk()
-  if (bulkPreviewData) commitBulkFromPreview()
-}
+async function commitBulk() { previewBulk(); if (bulkPreviewData) commitBulkFromPreview() }
 
 async function commitBulkFromPreview() {
   if (!bulkPreviewData) { toast('Lihat perubahan dulu', 'err'); return }
@@ -887,31 +848,23 @@ async function commitBulkFromPreview() {
   setLoading(true)
   try {
     let newDb = [...database]
-    if (mode === 'add') {
-      newDb = [...new Set([...newDb, ...actionWords])]
-    } else {
-      const toRemove = new Set(actionWords)
-      newDb = newDb.filter(w => !toRemove.has(w))
-    }
+    if (mode === 'add') newDb = [...new Set([...newDb, ...actionWords])]
+    else { const toRemove = new Set(actionWords); newDb = newDb.filter(w => !toRemove.has(w)) }
     const content = buildDbFile(newDb)
     await ghPut(cfg.filePath, content, dbSha, msg)
     if (mode === 'add') sessionStats.added += actionWords.length
     else sessionStats.removed += actionWords.length
-    database = newDb.sort()
-    dbSha = ''
-    bulkPreviewData = null
+    database = newDb.sort(); dbSha = ''; bulkPreviewData = null
     document.getElementById('bulk-input').value = ''
     document.getElementById('bulk-preview').style.display = 'none'
-    renderWordList()
-    updateStats()
+    renderWordList(); updateStats()
     await loadDatabase()
     toast('Perubahan massal berhasil disimpan!', 'ok')
-  } catch (e) {
-    toast('Gagal: ' + e.message, 'err')
-  }
+  } catch (e) { toast('Gagal: ' + e.message, 'err') }
   setLoading(false)
 }
 
+// ─── HISTORY ──────────────────────────────────────────────────────────────────
 async function loadHistory() {
   setLoading(true)
   const el = document.getElementById('history-list')
@@ -945,6 +898,7 @@ async function loadHistory() {
   setLoading(false)
 }
 
+// ─── UI UTILS ─────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.section-panel').forEach(el => el.style.display = 'none')
   document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -954,10 +908,7 @@ function switchTab(tab) {
   const panel = document.getElementById('tab-' + tab)
   if (panel) panel.style.display = 'block'
   const navBtn = document.querySelector(`.nav-btn[data-tab="${tab}"]`)
-  if (navBtn) {
-    navBtn.style.background = 'rgba(249,115,22,0.1)'
-    navBtn.style.color = 'var(--accent)'
-  }
+  if (navBtn) { navBtn.style.background = 'rgba(249,115,22,0.1)'; navBtn.style.color = 'var(--accent)' }
   if (tab === 'history' && !historyData.length) loadHistory()
   if (tab === 'words') renderWordList()
 }
@@ -987,15 +938,11 @@ function showConfirm(title, body, type, cb) {
   const wrap = document.getElementById('modal-icon-wrap')
   const btn = document.getElementById('modal-confirm-btn')
   if (type === 'delete') {
-    wrap.style.background = 'rgba(239,68,68,0.12)'
-    wrap.style.border = '1px solid rgba(239,68,68,0.3)'
-    document.getElementById('modal-icon').setAttribute('stroke', '#f87171')
-    btn.style.color = '#f87171'
+    wrap.style.background = 'rgba(239,68,68,0.12)'; wrap.style.border = '1px solid rgba(239,68,68,0.3)'
+    document.getElementById('modal-icon').setAttribute('stroke', '#f87171'); btn.style.color = '#f87171'
   } else {
-    wrap.style.background = 'rgba(34,197,94,0.12)'
-    wrap.style.border = '1px solid rgba(34,197,94,0.3)'
-    document.getElementById('modal-icon').setAttribute('stroke', '#4ade80')
-    btn.style.color = '#4ade80'
+    wrap.style.background = 'rgba(34,197,94,0.12)'; wrap.style.border = '1px solid rgba(34,197,94,0.3)'
+    document.getElementById('modal-icon').setAttribute('stroke', '#4ade80'); btn.style.color = '#4ade80'
   }
   btn.onclick = () => { closeModal(); if (confirmCb) confirmCb() }
   document.getElementById('confirm-modal').style.display = 'flex'
