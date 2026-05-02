@@ -529,11 +529,13 @@ function showPinErr(msg) {
 }
 
 function logout(manual = true) {
-  database = []; addQueue = []; delQueue = []
+  database = []; addQueue = []; delQueue = []; historyData = []
   cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
   document.getElementById('main-app').style.display = 'none'
   document.getElementById('lock-screen').style.display = 'flex'
   document.getElementById('pin-input').value = ''
+  const countEl = document.getElementById('nav-count-history')
+  countEl.textContent = ''; countEl.style.display = 'none'
   if (manual) localStorage.removeItem('sk_session')
 }
 
@@ -690,8 +692,7 @@ function markForDelete(word) {
   if (!delQueue.includes(word)) {
     delQueue.push(word)
     renderDelQueue()
-    switchTab('delete')
-    toast('"' + word + '" ditambah ke daftar hapus', 'info')
+    toast('"' + word + '" ditambah ke daftar hapus. Buka tab Hapus Kata untuk melanjutkan.', 'info')
   }
 }
 
@@ -759,7 +760,7 @@ function searchWordForDelete() {
   if (!q) { el.innerHTML = ''; return }
   const matches = database.filter(w => w.includes(q)).slice(0, 20)
   el.innerHTML = matches.map(w => `
-    <div class="word-chip chip-invalid" onclick="addToDelQueue('${w}')" style="cursor:pointer;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">${w}</div>
+    <div class="word-chip chip-pending" onclick="addToDelQueue('${w}')" style="cursor:pointer;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">${w}</div>
   `).join('')
 }
 
