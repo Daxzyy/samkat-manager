@@ -400,17 +400,7 @@
                 Hapus Banyak
               </button>
             </div>
-            <textarea id="bulk-input" class="input-field" placeholder="Paste kata-kata di sini, satu per baris atau pisahkan koma..." style="height:160px;resize:vertical;font-family:'Space Mono',monospace;font-size:12px;"></textarea>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button class="btn btn-ghost" onclick="previewBulk()" style="flex:1;justify-content:center;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                Lihat Perubahan
-              </button>
-              <button class="btn btn-orange" onclick="commitBulk()" style="flex:1;justify-content:center;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-                Simpan Langsung
-              </button>
-            </div>
+            <textarea id="bulk-input" class="input-field" placeholder="Paste kata-kata di sini, satu per baris atau pisahkan koma..." style="height:160px;resize:vertical;font-family:'Space Mono',monospace;font-size:12px;" oninput="previewBulk()"></textarea>
           </div>
 
           <div id="bulk-preview" style="display:none;" class="card">
@@ -421,9 +411,9 @@
             <div id="bulk-diff-list" style="max-height:240px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:12px;"></div>
             <div style="padding:12px 16px;border-top:1px solid var(--border);">
               <input id="bulk-commit-msg" type="text" class="input-field" placeholder="Catatan perubahan..." style="margin-bottom:10px;">
-              <button class="btn btn-orange" onclick="commitBulkFromPreview()" style="width:100%;justify-content:center;">
+              <button class="btn btn-orange" onclick="confirmAndSaveBulk()" style="width:100%;justify-content:center;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-                Konfirmasi & Simpan
+                Simpan Perubahan
               </button>
             </div>
           </div>
@@ -818,7 +808,11 @@ function parseBulkInput() {
 
 function previewBulk() {
   const words = parseBulkInput()
-  if (!words.length) { toast('Input kosong atau tidak valid', 'err'); return }
+  if (!words.length) {
+    document.getElementById('bulk-preview').style.display = 'none'
+    bulkPreviewData = null
+    return
+  }
   const dbSet = new Set(database)
   let changes = []
   if (bulkMode === 'add') {
@@ -846,7 +840,19 @@ function previewBulk() {
   document.getElementById('bulk-preview').style.display = 'block'
 }
 
-async function commitBulk() { previewBulk(); if (bulkPreviewData) commitBulkFromPreview() }
+function confirmAndSaveBulk() {
+  if (!bulkPreviewData) { toast('Belum ada perubahan', 'err'); return }
+  const { changes, mode } = bulkPreviewData
+  const actionWords = changes.filter(c => c.type !== 'skip').map(c => c.word)
+  if (!actionWords.length) { toast('Tidak ada perubahan yang bisa dilakukan', 'info'); return }
+  const label = mode === 'add' ? 'Tambah' : 'Hapus'
+  showConfirm(
+    `${label} ${actionWords.length} Kata?`,
+    `Kata berikut akan di${mode === 'add' ? 'tambah ke' : 'hapus dari'} database:<br><br><code style="color:${mode === 'add' ? '#4ade80' : '#f87171'}">${actionWords.slice(0,10).join(', ')}${actionWords.length > 10 ? '...' : ''}</code>`,
+    mode === 'add' ? 'add' : 'delete',
+    () => commitBulkFromPreview()
+  )
+}
 
 async function commitBulkFromPreview() {
   if (!bulkPreviewData) { toast('Lihat perubahan dulu', 'err'); return }
