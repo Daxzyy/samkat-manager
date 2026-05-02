@@ -63,6 +63,7 @@ function switchTab(tab) {
   }
   if (tab === 'history' && !App.historyLoaded) loadHistory()
   if (tab === 'words') renderWordList()
+  if (tab === 'users' && App.cfg.role === 'admin') loadUsers()
 }
 
 function updateRepoStatus(state) {
