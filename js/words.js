@@ -78,7 +78,9 @@ function clearQueue() { App.addQueue = []; renderAddQueue() }
 
 async function commitAdd() {
   if (!App.addQueue.length) { toast('Daftar kosong', 'err'); return }
-  const msg = document.getElementById('add-commit-msg').value || `Tambah ${App.addQueue.length} kata: ${App.addQueue.slice(0, 3).join(', ')}${App.addQueue.length > 3 ? '...' : ''}`
+  const customMsg = document.getElementById('add-commit-msg').value
+  const autoMsg = `[${App.cfg.username}] Tambah ${App.addQueue.length} kata: ${App.addQueue.slice(0, 3).join(', ')}${App.addQueue.length > 3 ? '...' : ''}`
+  const msg = customMsg ? `[${App.cfg.username}] ${customMsg}` : autoMsg
   showConfirm(
     'Tambah ' + App.addQueue.length + ' Kata?',
     'Kata berikut akan ditambah ke database:<br><br><code style="color:#4ade80">' + App.addQueue.join(', ') + '</code>',
@@ -136,7 +138,9 @@ function clearDelQueue() { App.delQueue = []; renderDelQueue() }
 
 async function commitDelete() {
   if (!App.delQueue.length) { toast('Tidak ada kata yang ditandai', 'err'); return }
-  const msg = document.getElementById('del-commit-msg').value || `Hapus ${App.delQueue.length} kata: ${App.delQueue.slice(0, 3).join(', ')}${App.delQueue.length > 3 ? '...' : ''}`
+  const customMsg = document.getElementById('del-commit-msg').value
+  const autoMsg = `[${App.cfg.username}] Hapus ${App.delQueue.length} kata: ${App.delQueue.slice(0, 3).join(', ')}${App.delQueue.length > 3 ? '...' : ''}`
+  const msg = customMsg ? `[${App.cfg.username}] ${customMsg}` : autoMsg
   showConfirm(
     'Hapus ' + App.delQueue.length + ' Kata?',
     'Kata berikut akan dihapus permanen dari database:<br><br><code style="color:#f87171">' + App.delQueue.join(', ') + '</code>',
@@ -238,7 +242,9 @@ async function commitBulkFromPreview() {
   const actionWords = changes.filter(c => c.type !== 'skip').map(c => c.word)
   if (!actionWords.length) { toast('Tidak ada perubahan yang bisa dilakukan', 'info'); return }
   const wordPreview = actionWords.slice(0, 5).join(', ') + (actionWords.length > 5 ? `, +${actionWords.length - 5} lainnya` : '')
-  const msg = document.getElementById('bulk-commit-msg').value || `${mode === 'add' ? 'Tambah' : 'Hapus'} ${actionWords.length} kata: ${wordPreview}`
+  const customMsg = document.getElementById('bulk-commit-msg').value
+  const autoMsg = `[${App.cfg.username}] ${mode === 'add' ? 'Tambah' : 'Hapus'} ${actionWords.length} kata: ${wordPreview}`
+  const msg = customMsg ? `[${App.cfg.username}] ${customMsg}` : autoMsg
   setLoading(true)
   try {
     let newDb = [...App.database]
