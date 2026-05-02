@@ -400,7 +400,7 @@
                 Hapus Banyak
               </button>
             </div>
-            <textarea id="bulk-input" class="input-field" placeholder="Paste kata-kata di sini, satu per baris atau pisahkan koma..." style="height:160px;resize:vertical;font-family:'Space Mono',monospace;font-size:12px;" oninput="previewBulk()"></textarea>
+            <textarea id="bulk-input" class="input-field" placeholder="Paste kata-kata di sini, satu per baris atau pisahkan koma..." style="height:160px;resize:none;font-family:'Space Mono',monospace;font-size:12px;" oninput="previewBulk()"></textarea>
           </div>
 
           <div id="bulk-preview" style="display:none;" class="card">
@@ -507,7 +507,14 @@ async function tryLogin() {
   }
 }
 
-function enterApp() {
+function enterApp(saveSession = true) {
+  if (saveSession) {
+    localStorage.setItem('sk_session', JSON.stringify({
+      key: cfg.key, token: cfg.token, owner: cfg.owner,
+      repo: cfg.repo, filePath: cfg.filePath,
+      exp: Date.now() + 60 * 60 * 1000
+    }))
+  }
   document.getElementById('lock-screen').style.display = 'none'
   document.getElementById('main-app').style.display = 'flex'
   switchTab('words')
@@ -521,12 +528,22 @@ function showPinErr(msg) {
   setTimeout(() => el.style.display = 'none', 4000)
 }
 
-function logout() {
+function logout(manual = true) {
   database = []; addQueue = []; delQueue = []
   cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
   document.getElementById('main-app').style.display = 'none'
   document.getElementById('lock-screen').style.display = 'flex'
   document.getElementById('pin-input').value = ''
+  if (manual) localStorage.removeItem('sk_session')
+}
+
+function checkSession() {
+  const s = localStorage.getItem('sk_session')
+  if (!s) return false
+  const { key, token, owner, repo, filePath, exp } = JSON.parse(s)
+  if (Date.now() > exp) { localStorage.removeItem('sk_session'); return false }
+  cfg.key = key; cfg.token = token; cfg.owner = owner; cfg.repo = repo; cfg.filePath = filePath
+  return true
 }
 
 // ─── LOADING ──────────────────────────────────────────────────────────────────
@@ -567,11 +584,19 @@ async function ghPut(path, content, sha, message) {
 }
 
 async function ghCommits() {
-  const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/commits?path=${encodeURIComponent(cfg.filePath)}&per_page=20`, {
-    headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
-  })
-  if (!r.ok) throw new Error()
-  return r.json()
+  let all = [], page = 1
+  while (true) {
+    const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/commits?path=${encodeURIComponent(cfg.filePath)}&per_page=100&page=${page}`, {
+      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
+    })
+    if (!r.ok) throw new Error()
+    const data = await r.json()
+    if (!data.length) break
+    all.push(...data)
+    if (data.length < 100) break
+    page++
+  }
+  return all
 }
 
 function parseDbFile(content) {
@@ -963,7 +988,11 @@ function closeModal() {
   confirmCb = null
 }
 
-document.getElementById('pin-input').focus()
+if (checkSession()) {
+  enterApp(false)
+} else {
+  document.getElementById('pin-input').focus()
+}
 function togglePin() {
   const inp = document.getElementById('pin-input')
   const eye = document.getElementById('pin-eye')
