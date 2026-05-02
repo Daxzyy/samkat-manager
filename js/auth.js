@@ -24,6 +24,8 @@ async function tryLogin() {
     const data = await res.json()
     App.cfg.key = pin
     App.cfg.filePath = data.filePath || 'src/db.js'
+    App.cfg.username = data.username || 'Admin'
+    App.cfg.role = data.role || 'member'
     spinner.style.display = 'none'
     enterApp()
   } catch (e) {
@@ -37,11 +39,15 @@ function enterApp(saveSession = true) {
     sessionStorage.setItem('sk_session', JSON.stringify({
       key: App.cfg.key,
       filePath: App.cfg.filePath,
+      username: App.cfg.username,
+      role: App.cfg.role,
       exp: Date.now() + 60 * 60 * 1000
     }))
   }
   document.getElementById('lock-screen').style.display = 'none'
   document.getElementById('main-app').style.display = 'flex'
+  const userTab = document.querySelector('.nav-btn[data-tab="users"]')
+  if (userTab) userTab.style.display = App.cfg.role === 'admin' ? 'flex' : 'none'
   switchTab('words')
   loadDatabase()
 }
@@ -58,7 +64,8 @@ function logout(manual = true) {
   App.addQueue = []
   App.delQueue = []
   App.historyLoaded = false
-  App.cfg = { key: '', filePath: 'src/db.js' }
+  App.cfg = { key: '', filePath: 'src/db.js', username: '', role: '' }
+  App.usersCache = { users: {}, sha: null }
   document.getElementById('main-app').style.display = 'none'
   document.getElementById('lock-screen').style.display = 'flex'
   document.getElementById('pin-input').value = ''
@@ -72,10 +79,12 @@ function checkSession() {
   const s = sessionStorage.getItem('sk_session')
   if (!s) return false
   try {
-    const { key, filePath, exp } = JSON.parse(s)
+    const { key, filePath, username, role, exp } = JSON.parse(s)
     if (Date.now() > exp) { sessionStorage.removeItem('sk_session'); return false }
     App.cfg.key = key
     App.cfg.filePath = filePath
+    App.cfg.username = username || 'Admin'
+    App.cfg.role = role || 'member'
     return true
   } catch {
     return false
