@@ -26,7 +26,7 @@ function renderUserList() {
       </div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:14px;font-weight:700;color:#e2e8f0;font-family:'Space Mono',monospace;">${name}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${u.role === 'admin' ? '👑 Admin' : '👤 Member'}</div>
+        <div style="font-size:11px;color:${u.role === 'admin' ? '#f97316' : 'var(--muted)'};margin-top:2px;font-weight:600;">${u.role === 'admin' ? 'Admin' : 'Member'}</div>
       </div>
       <button onclick="deleteUser('${name}')" class="btn btn-red" style="padding:6px 10px;font-size:12px;">Hapus</button>
     </div>
