@@ -1,5 +1,5 @@
 const App = {
-  cfg: { key: '', filePath: 'src/db.js' },
+  cfg: { key: '', filePath: 'src/db.js', username: '', role: '' },
   database: [],
   dbSha: '',
   addQueue: [],
@@ -8,4 +8,5 @@ const App = {
   bulkPreviewData: null,
   sessionStats: { added: 0, removed: 0 },
   historyLoaded: false,
+  usersCache: { users: {}, sha: null },
 }
