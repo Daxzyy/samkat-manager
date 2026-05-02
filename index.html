@@ -849,19 +849,23 @@ function previewBulk() {
   const added = changes.filter(c => c.type === 'add').length
   const removed = changes.filter(c => c.type === 'remove').length
   const skipped = changes.filter(c => c.type === 'skip').length
+  const hasAction = added > 0 || removed > 0
   document.getElementById('bulk-diff-stats').innerHTML = `
     <span style="color:#4ade80">+${added}</span> /
     <span style="color:#f87171">-${removed}</span> /
-    <span style="color:var(--muted)">${skipped} skip</span>
+    <span style="color:var(--muted)">${skipped} sudah ada</span>
   `
   document.getElementById('bulk-diff-list').innerHTML = changes.map(c => `
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);" class="${c.type==='add'?'diff-add':c.type==='remove'?'diff-remove':''}">
       <span style="color:${c.type==='add'?'#4ade80':c.type==='remove'?'#f87171':'var(--muted)'}">
         ${c.type==='add'?'+':c.type==='remove'?'−':'  '} ${c.word}
       </span>
-      ${c.type==='skip'?'<span style="font-size:10px;color:var(--muted);margin-left:8px;">(tidak berubah)</span>':''}
+      ${c.type==='skip'?'<span style="font-size:10px;color:var(--muted);margin-left:8px;">(sudah ada)</span>':''}
     </div>
   `).join('')
+  const saveBtn = document.querySelector('#bulk-preview .btn-orange')
+  saveBtn.style.opacity = hasAction ? '1' : '0.4'
+  saveBtn.style.pointerEvents = hasAction ? 'auto' : 'none'
   document.getElementById('bulk-preview').style.display = 'block'
 }
 
