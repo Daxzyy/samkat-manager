@@ -823,7 +823,7 @@ function setBulkMode(mode) {
     delBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
     addBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
   }
-  document.getElementById('bulk-preview').style.display = 'none'
+  previewBulk()
 }
 
 function parseBulkInput() {
@@ -860,7 +860,7 @@ function previewBulk() {
       <span style="color:${c.type==='add'?'#4ade80':c.type==='remove'?'#f87171':'var(--muted)'}">
         ${c.type==='add'?'+':c.type==='remove'?'−':'  '} ${c.word}
       </span>
-      ${c.type==='skip'?'<span style="font-size:10px;color:var(--muted);margin-left:8px;">(sudah ada)</span>':''}
+      ${c.type==='skip'?`<span style="font-size:10px;color:var(--muted);margin-left:8px;">(${bulkMode==='add'?'sudah ada':'tidak ditemukan'})</span>`:''}
     </div>
   `).join('')
   const saveBtn = document.querySelector('#bulk-preview .btn-orange')
