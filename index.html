@@ -693,7 +693,8 @@ function markForDelete(word) {
   if (!delQueue.includes(word)) {
     delQueue.push(word)
     renderDelQueue()
-    toast('"' + word + '" ditambah ke daftar hapus. Buka tab Hapus Kata untuk melanjutkan.', 'info')
+    switchTab('delete')
+    toast('"' + word + '" ditambah ke daftar hapus', 'info')
   }
 }
 
