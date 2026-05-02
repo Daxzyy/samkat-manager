@@ -669,11 +669,12 @@ function renderWordList() {
   }
   const PAGE = 200
   const shown = words.slice(0, PAGE)
+  const wordMap = shown
   el.innerHTML = shown.map((w, i) => `
-    <div class="word-row" onclick="navigator.clipboard.writeText('${w}');flashWord(this)" title="Klik untuk salin">
+    <div class="word-row" onclick="navigator.clipboard.writeText(wordMap[${i}]);flashWord(this)" title="Klik untuk salin">
       <span style="font-size:11px;color:var(--muted);min-width:40px;text-align:right;font-family:'Space Mono',monospace;">${(i+1)}</span>
       <span style="font-size:14px;font-weight:600;color:#e2e8f0;flex:1;font-family:'Space Mono',monospace;">${w}</span>
-      <button onclick="event.stopPropagation();markForDelete('${w}')" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='rgba(239,68,68,0.12)';this.style.color='#f87171'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'" title="Hapus kata ini">
+      <button onclick="event.stopPropagation();markForDelete(wordMap[${i}])" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='rgba(239,68,68,0.12)';this.style.color='#f87171'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'" title="Hapus kata ini">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>
     </div>
@@ -889,7 +890,8 @@ async function commitBulkFromPreview() {
   const { changes, mode } = bulkPreviewData
   const actionWords = changes.filter(c => c.type !== 'skip').map(c => c.word)
   if (!actionWords.length) { toast('Tidak ada perubahan yang bisa dilakukan', 'info'); return }
-  const msg = document.getElementById('bulk-commit-msg').value || `${mode === 'add' ? 'Tambah' : 'Hapus'} ${actionWords.length} kata`
+  const wordPreview = actionWords.slice(0,5).join(', ') + (actionWords.length > 5 ? `, +${actionWords.length - 5} lainnya` : '')
+  const msg = document.getElementById('bulk-commit-msg').value || `${mode === 'add' ? 'Tambah' : 'Hapus'} ${actionWords.length} kata: ${wordPreview}`
   setLoading(true)
   try {
     let newDb = [...database]
