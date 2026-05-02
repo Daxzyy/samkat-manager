@@ -4,172 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SK Admin — Manajer Kata</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-  :root {
-    --accent: #f97316;
-    --accent2: #fb923c;
-    --red: #ef4444;
-    --green: #22c55e;
-    --blue: #3b82f6;
-    --bg: #0c0e12;
-    --surface: #13161c;
-    --surface2: #1a1e27;
-    --border: rgba(255,255,255,0.07);
-    --text: #e2e8f0;
-    --muted: #64748b;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-  body { display: flex; flex-direction: column; }
-
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
-
-  .mono { font-family: 'Space Mono', monospace; }
-
-  .grid-bg {
-    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
-    border: none; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
-    white-space: nowrap;
-  }
-  .btn:active { transform: scale(0.95); }
-  .btn-orange { background: var(--accent); color: #fff; }
-  .btn-orange:hover { background: #ea6c0a; }
-  .btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); }
-  .btn-red { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
-  .btn-red:hover { background: rgba(239,68,68,0.2); }
-  .btn-green { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
-  .btn-green:hover { background: rgba(34,197,94,0.2); }
-  .btn-blue { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
-  .btn-blue:hover { background: rgba(59,130,246,0.2); }
-
-  .input-field {
-    width: 100%; padding: 9px 14px; border-radius: 8px; font-size: 14px; font-weight: 500;
-    border: 1px solid var(--border); background: rgba(10,12,16,0.8); color: var(--text);
-    outline: none; font-family: 'DM Sans', sans-serif; transition: border-color 0.15s;
-  }
-  .input-field:focus { border-color: var(--accent); }
-  .input-field::placeholder { color: var(--muted); }
-
-  .word-chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;
-    border: 1px solid; cursor: default; letter-spacing: 0.3px;
-    font-family: 'Space Mono', monospace; transition: all 0.15s;
-  }
-  .chip-valid { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); color: #4ade80; }
-  .chip-invalid { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); color: #f87171; }
-  .chip-pending { background: rgba(249,115,22,0.08); border-color: rgba(249,115,22,0.25); color: #fb923c; }
-
-  .status-dot {
-    width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-  }
-  .dot-valid { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-  .dot-invalid { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
-  .dot-pending { background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.5); }
-
-  .card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-  }
-
-  .toast-container {
-    position: fixed; top: 16px; right: 16px; z-index: 9999;
-    display: flex; flex-direction: column; gap: 8px; pointer-events: none;
-  }
-  .toast {
-    pointer-events: auto; border-radius: 10px; padding: 12px 16px;
-    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px;
-    animation: slideIn 0.25s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    min-width: 220px; max-width: 340px;
-  }
-  .toast-ok { background: #0f291a; border: 1px solid rgba(34,197,94,0.35); color: #4ade80; }
-  .toast-err { background: #1f0f0f; border: 1px solid rgba(239,68,68,0.35); color: #f87171; }
-  .toast-info { background: #1a1510; border: 1px solid rgba(249,115,22,0.35); color: #fb923c; }
-  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-    backdrop-filter: blur(4px);
-  }
-  .modal-box {
-    background: var(--surface2); border: 1px solid var(--border); border-radius: 16px;
-    width: 100%; max-width: 400px; overflow: hidden;
-    animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-  .tab-active {
-    background: var(--accent) !important;
-    color: #fff !important;
-    border-color: var(--accent) !important;
-  }
-
-  .word-row {
-    display: flex; align-items: center; gap: 10px; padding: 10px 16px;
-    border-bottom: 1px solid var(--border); transition: background 0.1s;
-  }
-  .word-row:hover { background: rgba(255,255,255,0.02); }
-  .word-row:last-child { border-bottom: none; }
-
-  .badge {
-    padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-  }
-  .badge-valid { background: rgba(34,197,94,0.15); color: #4ade80; }
-  .badge-invalid { background: rgba(239,68,68,0.15); color: #f87171; }
-  .badge-pending { background: rgba(249,115,22,0.15); color: #fb923c; }
-
-  .spinner {
-    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.15);
-    border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading-bar {
-    height: 2px; background: var(--accent);
-    animation: loadbar 1.4s ease-in-out infinite;
-  }
-  @keyframes loadbar {
-    0% { width: 0; margin-left: 0; }
-    50% { width: 60%; margin-left: 20%; }
-    100% { width: 0; margin-left: 100%; }
-  }
-
-  #lock-screen { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); }
-  #main-app { height: 100%; display: flex; flex-direction: column; }
-
-  .section-panel { flex: 1; overflow-y: auto; }
-
-  .tag-sm {
-    padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.6px; text-transform: uppercase;
-  }
-
-  select.input-field {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
-  }
-
-  .diff-add { background: rgba(34,197,94,0.08); border-left: 3px solid rgba(34,197,94,0.5); }
-  .diff-remove { background: rgba(239,68,68,0.08); border-left: 3px solid rgba(239,68,68,0.5); }
-
-  #login-spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
-</style>
+<link rel="stylesheet" href="/public/css/styles.css">
 </head>
 <body class="grid-bg">
 
@@ -182,7 +18,12 @@
         </div>
         <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">SK Admin Panel</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:24px;">Word Manager</div>
-        <div style="position:relative;margin-bottom:12px;">   <input id="pin-input" type="password" class="input-field" placeholder="Masukkan password..." style="text-align:center;font-family:'Space Mono',monospace;padding-right:44px;" onkeydown="if(event.key==='Enter')tryLogin()">   <button onclick="togglePin()" id="pin-toggle" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;" title="Tampilkan/sembunyikan">     <svg id="pin-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>   </button> </div>
+        <div style="position:relative;margin-bottom:12px;">
+          <input id="pin-input" type="password" class="input-field" placeholder="Masukkan password..." style="text-align:center;font-family:'Space Mono',monospace;padding-right:44px;" onkeydown="if(event.key==='Enter')tryLogin()">
+          <button onclick="togglePin()" id="pin-toggle" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;" title="Tampilkan/sembunyikan">
+            <svg id="pin-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
         <button class="btn btn-orange" style="width:100%;justify-content:center;" onclick="tryLogin()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           Masuk
@@ -219,9 +60,9 @@
     </div>
   </header>
 
-<div style="display:flex;gap:0;flex:1;min-height:0;overflow:hidden;flex-direction:column;">
+  <div style="display:flex;gap:0;flex:1;min-height:0;overflow:hidden;flex-direction:column;">
     <nav style="width:100%;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:row;padding:6px 8px;gap:2px;overflow-x:auto;flex-shrink:0;flex-wrap:nowrap;">
-<button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
+      <button class="nav-btn" data-tab="words" onclick="switchTab('words')" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all 0.15s;font-family:'DM Sans',sans-serif;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Kata
         <span id="nav-count-words" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(249,115,22,0.15);color:var(--accent);padding:1px 7px;border-radius:4px;display:none;"></span>
@@ -243,23 +84,6 @@
         Riwayat Perubahan
         <span id="nav-count-history" style="margin-left:auto;font-size:11px;font-weight:700;background:rgba(59,130,246,0.15);color:#60a5fa;padding:1px 7px;border-radius:4px;display:none;"></span>
       </button>
-
-<div style="display:none;"></div>
-      <div style="display:none;">
-        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Database</div>
-        <div style="font-size:20px;font-weight:800;color:#fff;font-family:'Space Mono',monospace;" id="stat-total">—</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">total kata</div>
-        <div style="margin-top:8px;display:flex;justify-content:space-between;">
-          <div>
-            <div style="font-size:13px;font-weight:700;color:#4ade80;font-family:'Space Mono',monospace;" id="stat-added">+0</div>
-            <div style="font-size:10px;color:var(--muted);">ditambah</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:13px;font-weight:700;color:#f87171;font-family:'Space Mono',monospace;" id="stat-removed">-0</div>
-            <div style="font-size:10px;color:var(--muted);">dihapus</div>
-          </div>
-        </div>
-      </div>
     </nav>
 
     <main style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;">
@@ -273,30 +97,18 @@
           </div>
           <select id="word-filter" class="input-field" style="width:auto;min-width:130px;" onchange="filterWords()">
             <option value="all">Semua</option>
-            <option value="a">Awalan A</option>
-            <option value="b">Awalan B</option>
-            <option value="c">Awalan C</option>
-            <option value="d">Awalan D</option>
-            <option value="e">Awalan E</option>
-            <option value="f">Awalan F</option>
-            <option value="g">Awalan G</option>
-            <option value="h">Awalan H</option>
-            <option value="i">Awalan I</option>
-            <option value="j">Awalan J</option>
-            <option value="k">Awalan K</option>
-            <option value="l">Awalan L</option>
-            <option value="m">Awalan M</option>
-            <option value="n">Awalan N</option>
-            <option value="o">Awalan O</option>
-            <option value="p">Awalan P</option>
-            <option value="r">Awalan R</option>
-            <option value="s">Awalan S</option>
-            <option value="t">Awalan T</option>
-            <option value="u">Awalan U</option>
-            <option value="v">Awalan V</option>
-            <option value="w">Awalan W</option>
-            <option value="y">Awalan Y</option>
-            <option value="z">Awalan Z</option>
+            <option value="a">Awalan A</option><option value="b">Awalan B</option>
+            <option value="c">Awalan C</option><option value="d">Awalan D</option>
+            <option value="e">Awalan E</option><option value="f">Awalan F</option>
+            <option value="g">Awalan G</option><option value="h">Awalan H</option>
+            <option value="i">Awalan I</option><option value="j">Awalan J</option>
+            <option value="k">Awalan K</option><option value="l">Awalan L</option>
+            <option value="m">Awalan M</option><option value="n">Awalan N</option>
+            <option value="o">Awalan O</option><option value="p">Awalan P</option>
+            <option value="r">Awalan R</option><option value="s">Awalan S</option>
+            <option value="t">Awalan T</option><option value="u">Awalan U</option>
+            <option value="v">Awalan V</option><option value="w">Awalan W</option>
+            <option value="y">Awalan Y</option><option value="z">Awalan Z</option>
           </select>
           <button class="btn btn-ghost" onclick="loadDatabase()" style="padding:8px 10px;" title="Refresh">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
@@ -304,7 +116,7 @@
         </div>
         <div class="card" style="overflow:hidden;">
           <div style="padding:10px 16px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>             <span id="stat-total-inline" style="display:none;"></span>
+            <span id="word-count-label" style="font-size:12px;color:var(--muted);font-weight:600;">Memuat...</span>
             <span style="font-size:11px;color:var(--muted);">klik kata untuk salin</span>
           </div>
           <div id="word-list" style="max-height:calc(100vh - 260px);overflow-y:auto;"></div>
@@ -315,22 +127,18 @@
         <div style="max-width:500px;">
           <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;">Tambah Kata</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Tambah satu atau lebih kata ke database</div>
-
           <div class="card" style="padding:20px;margin-bottom:16px;">
             <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:7px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
               Kata Baru
             </div>
             <input id="add-word-input" type="text" class="input-field" placeholder="Ketik kata, pisahkan dengan koma atau enter..." style="margin-bottom:10px;" onkeydown="if(event.key==='Enter'){addWordToQueue()}">
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-orange" onclick="addWordToQueue()" style="flex:1;justify-content:center;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Tambah ke Daftar
-              </button>
-            </div>
+            <button class="btn btn-orange" onclick="addWordToQueue()" style="width:100%;justify-content:center;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Tambah ke Daftar
+            </button>
           </div>
-
-          <div id="add-queue-wrap" style="display:none;" class="card" style="padding:16px;margin-bottom:16px;">
+          <div id="add-queue-wrap" style="display:none;" class="card">
             <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
               <div style="font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -354,7 +162,6 @@
         <div style="max-width:500px;">
           <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;">Hapus Kata</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Cari dan tandai kata yang mau dihapus dari database</div>
-
           <div class="card" style="padding:20px;margin-bottom:16px;">
             <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:7px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -363,8 +170,7 @@
             <input id="del-word-input" type="text" class="input-field" placeholder="Ketik nama kata..." style="margin-bottom:10px;" oninput="searchWordForDelete()">
             <div id="del-suggestions" style="display:flex;flex-wrap:wrap;gap:5px;min-height:32px;"></div>
           </div>
-
-          <div id="del-queue-wrap" style="display:none;" class="card" style="padding:16px;margin-bottom:16px;">
+          <div id="del-queue-wrap" style="display:none;" class="card">
             <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
               <div style="font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -388,7 +194,6 @@
         <div style="max-width:600px;">
           <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;">Edit Massal</div>
           <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Paste daftar kata langsung, lihat perubahan, lalu simpan</div>
-
           <div class="card" style="padding:20px;margin-bottom:16px;">
             <div style="display:flex;gap:8px;margin-bottom:12px;">
               <button class="btn" id="bulk-tab-add" onclick="setBulkMode('add')" style="flex:1;justify-content:center;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;">
@@ -402,7 +207,6 @@
             </div>
             <textarea id="bulk-input" class="input-field" placeholder="Paste kata-kata di sini, satu per baris atau pisahkan koma..." style="height:160px;resize:none;font-family:'Space Mono',monospace;font-size:12px;" oninput="previewBulk()"></textarea>
           </div>
-
           <div id="bulk-preview" style="display:none;" class="card">
             <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
               <div style="font-size:13px;font-weight:700;color:#fff;">Rincian Perubahan</div>
@@ -423,7 +227,7 @@
       <div id="tab-history" class="section-panel" style="padding:20px;display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
           <div style="font-size:16px;font-weight:800;color:#fff;">Riwayat Perubahan</div>
-          <button class="btn btn-ghost" onclick="loadHistory()" style="padding:7px 10px;" title="Refresh">
+          <button class="btn btn-ghost" onclick="App.historyLoaded=false;loadHistory()" style="padding:7px 10px;" title="Refresh">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
           </button>
         </div>
@@ -433,6 +237,13 @@
       </div>
 
     </main>
+  </div>
+
+  <div style="display:none;">
+    <div id="stat-total">—</div>
+    <div id="stat-added">+0</div>
+    <div id="stat-removed">-0</div>
+    <div id="stat-total-inline"></div>
   </div>
 </div>
 
@@ -449,569 +260,16 @@
     </div>
     <div style="display:flex;gap:0;border-top:1px solid var(--border);">
       <button onclick="closeModal()" style="flex:1;padding:14px;font-size:14px;font-weight:600;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.12s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='transparent'">Batal</button>
-<button id="modal-confirm-btn" style="flex:1;padding:14px;font-size:14px;font-weight:700;border:none;background:transparent;color:#f87171;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.12s;border-left:1px solid var(--border);" onmouseover="this.style.background='rgba(239,68,68,0.08)'" onmouseout="this.style.background='transparent'">Ya, Lanjutkan</button>
+      <button id="modal-confirm-btn" style="flex:1;padding:14px;font-size:14px;font-weight:700;border:none;background:transparent;color:#f87171;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.12s;border-left:1px solid var(--border);" onmouseover="this.style.background='rgba(239,68,68,0.08)'" onmouseout="this.style.background='transparent'">Ya, Lanjutkan</button>
     </div>
   </div>
 </div>
 
-<script>
-let cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
-
-let database = []
-let dbSha = ''
-let addQueue = []
-let delQueue = []
-let bulkMode = 'add'
-let bulkPreviewData = null
-let sessionStats = { added: 0, removed: 0 }
-let historyData = []
-
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
-async function tryLogin() {
-  const pin = document.getElementById('pin-input').value.trim()
-  if (!pin) { showPinErr('Masukkan access key dulu'); return }
-
-  const errEl = document.getElementById('pin-err')
-  const spinner = document.getElementById('login-spinner')
-  errEl.style.display = 'none'
-  spinner.style.display = 'block'
-
-  try {
-    const res = await fetch('/api/config', {
-      headers: { 'x-admin-key': pin }
-    })
-
-    if (res.status === 403) {
-      showPinErr('Access key salah.')
-      spinner.style.display = 'none'
-      return
-    }
-    if (!res.ok) {
-      showPinErr('Server error: ' + res.status + '. Cek env vars di Vercel.')
-      spinner.style.display = 'none'
-      return
-    }
-
-    const data = await res.json()
-    cfg.key = pin
-    cfg.token = data.token
-    cfg.owner = data.owner
-    cfg.repo = data.repo
-    cfg.filePath = data.filePath || 'src/db.js'
-
-    spinner.style.display = 'none'
-    enterApp()
-  } catch (e) {
-    showPinErr('Gagal terhubung ke server.')
-    spinner.style.display = 'none'
-  }
-}
-
-function enterApp(saveSession = true) {
-  if (saveSession) {
-    localStorage.setItem('sk_session', JSON.stringify({
-      key: cfg.key, token: cfg.token, owner: cfg.owner,
-      repo: cfg.repo, filePath: cfg.filePath,
-      exp: Date.now() + 60 * 60 * 1000
-    }))
-  }
-  document.getElementById('lock-screen').style.display = 'none'
-  document.getElementById('main-app').style.display = 'flex'
-  switchTab('words')
-  loadDatabase()
-}
-
-function showPinErr(msg) {
-  const el = document.getElementById('pin-err')
-  el.textContent = msg
-  el.style.display = 'block'
-  setTimeout(() => el.style.display = 'none', 4000)
-}
-
-function logout(manual = true) {
-  database = []; addQueue = []; delQueue = []; historyData = []
-  cfg = { key: '', token: '', owner: '', repo: '', filePath: 'src/db.js' }
-  document.getElementById('main-app').style.display = 'none'
-  document.getElementById('lock-screen').style.display = 'flex'
-  document.getElementById('pin-input').value = ''
-  const countEl = document.getElementById('nav-count-history')
-  countEl.textContent = ''; countEl.style.display = 'none'
-  if (manual) localStorage.removeItem('sk_session')
-}
-
-function checkSession() {
-  const s = localStorage.getItem('sk_session')
-  if (!s) return false
-  const { key, token, owner, repo, filePath, exp } = JSON.parse(s)
-  if (Date.now() > exp) { localStorage.removeItem('sk_session'); return false }
-  cfg.key = key; cfg.token = token; cfg.owner = owner; cfg.repo = repo; cfg.filePath = filePath
-  return true
-}
-
-// ─── LOADING ──────────────────────────────────────────────────────────────────
-function setLoading(show) {
-  document.getElementById('loading-bar-wrap').style.display = show ? 'block' : 'none'
-}
-
-// ─── GITHUB API ───────────────────────────────────────────────────────────────
-async function ghGet(path) {
-  const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`, {
-    headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
-  })
-  if (!r.ok) throw new Error(`Gagal terhubung ${r.status}: ${r.statusText}`)
-  const meta = await r.json()
-  if (meta.encoding === 'none' || meta.content === '') {
-    const blobR = await fetch(meta.git_url + '?recursive=0', {
-      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
-    })
-    if (!blobR.ok) throw new Error(`Gagal ambil blob ${blobR.status}`)
-    const blob = await blobR.json()
-    return { ...meta, content: blob.content, encoding: blob.encoding, sha: meta.sha }
-  }
-  return meta
-}
-
-async function ghPut(path, content, sha, message) {
-  const body = { message, content: btoa(unescape(encodeURIComponent(content))), sha }
-  const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`, {
-    method: 'PUT',
-    headers: { 'Authorization': `token ${cfg.token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
-    body: JSON.stringify(body)
-  })
-  if (!r.ok) {
-    const err = await r.json().catch(() => ({}))
-    throw new Error(err.message || `Gagal menyimpan ${r.status}`)
-  }
-  return r.json()
-}
-
-async function ghCommits() {
-  let all = [], page = 1
-  while (true) {
-    const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/commits?path=${encodeURIComponent(cfg.filePath)}&per_page=100&page=${page}`, {
-      headers: { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' }
-    })
-    if (!r.ok) throw new Error()
-    const data = await r.json()
-    if (!data.length) break
-    all.push(...data)
-    if (data.length < 100) break
-    page++
-  }
-  return all
-}
-
-function parseDbFile(content) {
-  const match = content.match(/export\s+default\s+(\[[\s\S]*\])/)
-  if (!match) throw new Error('Format file db.js tidak dikenali')
-  const arr = JSON.parse(match[1])
-  return arr.map(w => w.trim().toLowerCase()).filter(Boolean)
-}
-
-function buildDbFile(words) {
-  const sorted = [...new Set(words)].sort()
-  return `export default ${JSON.stringify(sorted, null, 2)}\n`
-}
-
-async function loadDatabase() {
-  setLoading(true)
-  updateRepoStatus('loading')
-  try {
-    const data = await ghGet(cfg.filePath)
-    dbSha = data.sha
-    const content = atob(data.content.replace(/\n/g, ''))
-    database = parseDbFile(content)
-    updateRepoStatus('ok')
-    renderWordList()
-    updateStats()
-    toast('Database dimuat: ' + database.length.toLocaleString() + ' kata', 'ok')
-  } catch (e) {
-    updateRepoStatus('err')
-    toast('Gagal memuat database: ' + e.message, 'err')
-  }
-  setLoading(false)
-}
-
-function updateRepoStatus(state) {
-  const el = document.getElementById('repo-status')
-  const states = {
-    ok: { dot: 'dot-valid', text: 'Terhubung', color: '#4ade80' },
-    err: { dot: 'dot-invalid', text: 'Gagal terhubung', color: '#f87171' },
-    loading: { dot: 'dot-pending', text: 'Menghubungkan...', color: 'var(--muted)' }
-  }
-  const s = states[state] || states.loading
-  el.innerHTML = `<div class="status-dot ${s.dot}"></div><span style="color:${s.color}">${s.text}</span>`
-}
-
-function updateStats() {
-  document.getElementById('stat-total').textContent = database.length.toLocaleString()
-  document.getElementById('stat-added').textContent = '+' + sessionStats.added
-  document.getElementById('stat-removed').textContent = '-' + sessionStats.removed
-  const inl = document.getElementById('stat-total-inline')
-  if (inl) inl.textContent = database.length.toLocaleString() + ' kata'
-}
-
-function filterWords() { renderWordList() }
-
-function renderWordList() {
-  const search = (document.getElementById('word-search')?.value || '').toLowerCase().trim()
-  const filter = document.getElementById('word-filter')?.value || 'all'
-  let words = database
-  if (filter !== 'all') words = words.filter(w => w.startsWith(filter))
-  if (search) words = words.filter(w => w.includes(search))
-  const el = document.getElementById('word-list')
-  const label = document.getElementById('word-count-label')
-  if (!el) return
-  label.textContent = words.length.toLocaleString() + ' kata'
-  if (words.length === 0) {
-    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;">Tidak ada kata ditemukan</div>'
-    return
-  }
-  const PAGE = 200
-  const shown = words.slice(0, PAGE)
-  window._wordMap = shown
-  el.innerHTML = shown.map((w, i) => `
-    <div class="word-row" onclick="navigator.clipboard.writeText(window._wordMap[${i}]);flashWord(this)" title="Klik untuk salin">
-      <span style="font-size:11px;color:var(--muted);min-width:40px;text-align:right;font-family:'Space Mono',monospace;">${(i+1)}</span>
-      <span style="font-size:14px;font-weight:600;color:#e2e8f0;flex:1;font-family:'Space Mono',monospace;">${w}</span>
-      <button onclick="event.stopPropagation();markForDelete(window._wordMap[${i}])" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all 0.12s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='rgba(239,68,68,0.12)';this.style.color='#f87171'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)'" title="Hapus kata ini">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-      </button>
-    </div>
-  `).join('')
-  if (words.length > PAGE) {
-    el.innerHTML += `<div style="padding:12px;text-align:center;font-size:12px;color:var(--muted);">... dan ${(words.length - PAGE).toLocaleString()} kata lagi. Gunakan filter untuk mempersempit.</div>`
-  }
-}
-
-function flashWord(el) {
-  el.style.background = 'rgba(249,115,22,0.1)'
-  setTimeout(() => el.style.background = '', 400)
-}
-
-function markForDelete(word) {
-  if (!delQueue.includes(word)) {
-    delQueue.push(word)
-    renderDelQueue()
-    switchTab('delete')
-    toast('"' + word + '" ditambah ke daftar hapus', 'info')
-  }
-}
-
-// ─── ADD ──────────────────────────────────────────────────────────────────────
-function addWordToQueue() {
-  const raw = document.getElementById('add-word-input').value
-  const words = raw.split(/[,\n\s]+/).map(w => w.trim().toLowerCase()).filter(Boolean)
-  const valid = words.filter(w => /^[a-z]+$/.test(w))
-  const dupes = valid.filter(w => database.includes(w) || addQueue.includes(w))
-  const toAdd = valid.filter(w => !database.includes(w) && !addQueue.includes(w))
-  if (toAdd.length) { addQueue.push(...toAdd); renderAddQueue(); toast(toAdd.length + ' kata ditambah ke daftar', 'ok') }
-  if (dupes.length) toast(dupes.length + ' kata sudah ada di database', 'info')
-  if (valid.length === 0) { toast('Format kata tidak valid (hanya huruf a-z)', 'err'); return }
-  document.getElementById('add-word-input').value = ''
-}
-
-function renderAddQueue() {
-  const wrap = document.getElementById('add-queue-wrap')
-  const list = document.getElementById('add-queue-list')
-  const count = document.getElementById('queue-count')
-  wrap.style.display = addQueue.length ? 'block' : 'none'
-  count.textContent = addQueue.length
-  list.innerHTML = addQueue.map(w => `
-    <div class="word-chip chip-valid">
-      ${w}
-      <button onclick="removeFromAddQueue('${w}')" style="background:none;border:none;cursor:pointer;color:#4ade80;opacity:0.7;padding:0;line-height:1;font-family:'DM Sans',sans-serif;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-  `).join('')
-}
-
-function removeFromAddQueue(word) { addQueue = addQueue.filter(w => w !== word); renderAddQueue() }
-function clearQueue() { addQueue = []; renderAddQueue() }
-
-async function commitAdd() {
-  if (!addQueue.length) { toast('Daftar kosong', 'err'); return }
-  const msg = document.getElementById('add-commit-msg').value || `Tambah ${addQueue.length} kata: ${addQueue.slice(0,3).join(', ')}${addQueue.length>3?'...':''}`
-  showConfirm(
-    'Tambah ' + addQueue.length + ' Kata?',
-    'Kata berikut akan ditambah ke database:<br><br><code style="color:#4ade80">' + addQueue.join(', ') + '</code>',
-    'add',
-    async () => {
-      setLoading(true)
-      try {
-        const newDb = [...new Set([...database, ...addQueue])]
-        const content = buildDbFile(newDb)
-        await ghPut(cfg.filePath, content, dbSha, msg)
-        sessionStats.added += addQueue.length
-        database = newDb.sort()
-        addQueue = []; dbSha = ''
-        renderAddQueue(); renderWordList(); updateStats()
-        await loadDatabase()
-        toast('Perubahan berhasil disimpan!', 'ok')
-      } catch (e) { toast('Gagal menyimpan: ' + e.message, 'err') }
-      setLoading(false)
-    }
-  )
-}
-
-// ─── DELETE ───────────────────────────────────────────────────────────────────
-function searchWordForDelete() {
-  const q = document.getElementById('del-word-input').value.toLowerCase().trim()
-  const el = document.getElementById('del-suggestions')
-  if (!q) { el.innerHTML = ''; return }
-  const matches = database.filter(w => w.includes(q)).slice(0, 20)
-  el.innerHTML = matches.map(w => `
-    <div class="word-chip chip-pending" onclick="addToDelQueue('${w}')" style="cursor:pointer;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='1'">${w}</div>
-  `).join('')
-}
-
-function addToDelQueue(word) {
-  if (!delQueue.includes(word)) { delQueue.push(word); renderDelQueue(); toast('"' + word + '" ditandai untuk dihapus', 'info') }
-}
-
-function renderDelQueue() {
-  const wrap = document.getElementById('del-queue-wrap')
-  const list = document.getElementById('del-queue-list')
-  const count = document.getElementById('del-queue-count')
-  wrap.style.display = delQueue.length ? 'block' : 'none'
-  count.textContent = delQueue.length
-  list.innerHTML = delQueue.map(w => `
-    <div class="word-chip chip-invalid">
-      ${w}
-      <button onclick="removeFromDelQueue('${w}')" style="background:none;border:none;cursor:pointer;color:#f87171;opacity:0.7;padding:0;line-height:1;font-family:'DM Sans',sans-serif;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-  `).join('')
-}
-
-function removeFromDelQueue(word) { delQueue = delQueue.filter(w => w !== word); renderDelQueue() }
-function clearDelQueue() { delQueue = []; renderDelQueue() }
-
-async function commitDelete() {
-  if (!delQueue.length) { toast('Tidak ada kata yang ditandai', 'err'); return }
-  const msg = document.getElementById('del-commit-msg').value || `Hapus ${delQueue.length} kata: ${delQueue.slice(0,3).join(', ')}${delQueue.length>3?'...':''}`
-  showConfirm(
-    'Hapus ' + delQueue.length + ' Kata?',
-    'Kata berikut akan dihapus permanen dari database:<br><br><code style="color:#f87171">' + delQueue.join(', ') + '</code>',
-    'delete',
-    async () => {
-      setLoading(true)
-      try {
-        const toRemove = new Set(delQueue)
-        const newDb = database.filter(w => !toRemove.has(w))
-        const content = buildDbFile(newDb)
-        await ghPut(cfg.filePath, content, dbSha, msg)
-        sessionStats.removed += delQueue.length
-        database = newDb; delQueue = []; dbSha = ''
-        renderDelQueue(); renderWordList(); updateStats()
-        await loadDatabase()
-        toast('Berhasil menghapus kata!', 'ok')
-      } catch (e) { toast('Gagal menyimpan: ' + e.message, 'err') }
-      setLoading(false)
-    }
-  )
-}
-
-// ─── BULK ─────────────────────────────────────────────────────────────────────
-function setBulkMode(mode) {
-  bulkMode = mode
-  const addBtn = document.getElementById('bulk-tab-add')
-  const delBtn = document.getElementById('bulk-tab-del')
-  if (mode === 'add') {
-    addBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
-    delBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
-  } else {
-    delBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
-    addBtn.style.cssText = 'flex:1;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;'
-  }
-  previewBulk()
-}
-
-function parseBulkInput() {
-  const raw = document.getElementById('bulk-input').value
-  return raw.split(/[,\n]+/).map(w => w.trim().toLowerCase()).filter(w => /^[a-z]+$/.test(w))
-}
-
-function previewBulk() {
-  const words = parseBulkInput()
-  if (!words.length) {
-    document.getElementById('bulk-preview').style.display = 'none'
-    bulkPreviewData = null
-    return
-  }
-  const dbSet = new Set(database)
-  let changes = []
-  if (bulkMode === 'add') {
-    changes = words.map(w => ({ word: w, type: dbSet.has(w) ? 'skip' : 'add' }))
-  } else {
-    changes = words.map(w => ({ word: w, type: dbSet.has(w) ? 'remove' : 'skip' }))
-  }
-  bulkPreviewData = { words, changes, mode: bulkMode }
-  const added = changes.filter(c => c.type === 'add').length
-  const removed = changes.filter(c => c.type === 'remove').length
-  const skipped = changes.filter(c => c.type === 'skip').length
-  const hasAction = added > 0 || removed > 0
-  document.getElementById('bulk-diff-stats').innerHTML = `
-    <span style="color:#4ade80">+${added}</span> /
-    <span style="color:#f87171">-${removed}</span> /
-    <span style="color:var(--muted)">${skipped} sudah ada</span>
-  `
-  document.getElementById('bulk-diff-list').innerHTML = changes.map(c => `
-    <div style="padding:7px 14px;border-bottom:1px solid var(--border);" class="${c.type==='add'?'diff-add':c.type==='remove'?'diff-remove':''}">
-      <span style="color:${c.type==='add'?'#4ade80':c.type==='remove'?'#f87171':'var(--muted)'}">
-        ${c.type==='add'?'+':c.type==='remove'?'−':'  '} ${c.word}
-      </span>
-      ${c.type==='skip'?`<span style="font-size:10px;color:var(--muted);margin-left:8px;">(${bulkMode==='add'?'sudah ada':'tidak ditemukan'})</span>`:''}
-    </div>
-  `).join('')
-  const saveBtn = document.querySelector('#bulk-preview .btn-orange')
-  saveBtn.style.opacity = hasAction ? '1' : '0.4'
-  saveBtn.style.pointerEvents = hasAction ? 'auto' : 'none'
-  document.getElementById('bulk-preview').style.display = 'block'
-}
-
-function confirmAndSaveBulk() {
-  if (!bulkPreviewData) { toast('Belum ada perubahan', 'err'); return }
-  const { changes, mode } = bulkPreviewData
-  const actionWords = changes.filter(c => c.type !== 'skip').map(c => c.word)
-  if (!actionWords.length) { toast('Tidak ada perubahan yang bisa dilakukan', 'info'); return }
-  const label = mode === 'add' ? 'Tambah' : 'Hapus'
-  showConfirm(
-    `${label} ${actionWords.length} Kata?`,
-    `Kata berikut akan di${mode === 'add' ? 'tambah ke' : 'hapus dari'} database:<br><br><code style="color:${mode === 'add' ? '#4ade80' : '#f87171'}">${actionWords.slice(0,10).join(', ')}${actionWords.length > 10 ? '...' : ''}</code>`,
-    mode === 'add' ? 'add' : 'delete',
-    () => commitBulkFromPreview()
-  )
-}
-
-async function commitBulkFromPreview() {
-  if (!bulkPreviewData) { toast('Lihat perubahan dulu', 'err'); return }
-  const { changes, mode } = bulkPreviewData
-  const actionWords = changes.filter(c => c.type !== 'skip').map(c => c.word)
-  if (!actionWords.length) { toast('Tidak ada perubahan yang bisa dilakukan', 'info'); return }
-  const wordPreview = actionWords.slice(0,5).join(', ') + (actionWords.length > 5 ? `, +${actionWords.length - 5} lainnya` : '')
-  const msg = document.getElementById('bulk-commit-msg').value || `${mode === 'add' ? 'Tambah' : 'Hapus'} ${actionWords.length} kata: ${wordPreview}`
-  setLoading(true)
-  try {
-    let newDb = [...database]
-    if (mode === 'add') newDb = [...new Set([...newDb, ...actionWords])]
-    else { const toRemove = new Set(actionWords); newDb = newDb.filter(w => !toRemove.has(w)) }
-    const content = buildDbFile(newDb)
-    await ghPut(cfg.filePath, content, dbSha, msg)
-    if (mode === 'add') sessionStats.added += actionWords.length
-    else sessionStats.removed += actionWords.length
-    database = newDb.sort(); dbSha = ''; bulkPreviewData = null
-    document.getElementById('bulk-input').value = ''
-    document.getElementById('bulk-preview').style.display = 'none'
-    renderWordList(); updateStats()
-    await loadDatabase()
-    toast('Perubahan massal berhasil disimpan!', 'ok')
-  } catch (e) { toast('Gagal: ' + e.message, 'err') }
-  setLoading(false)
-}
-
-// ─── HISTORY ──────────────────────────────────────────────────────────────────
-async function loadHistory() {
-  setLoading(true)
-  const el = document.getElementById('history-list')
-  el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">Memuat...</div>'
-  try {
-    const commits = await ghCommits()
-    const count = document.getElementById('nav-count-history')
-    count.textContent = commits.length
-    count.style.display = 'inline-block'
-    el.innerHTML = commits.map(c => `
-      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);">
-        <div style="width:36px;height:36px;border-radius:8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="3"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:3px;word-break:break-word;">${c.commit.message}</div>
-          <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;">
-            <span>${new Date(c.commit.author.date).toLocaleString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })}</span>
-          </div>
-        </div>
-      </div>
-    `).join('')
-  } catch (e) {
-    el.innerHTML = '<div style="padding:24px;text-align:center;color:#f87171;font-size:13px;">Gagal memuat: ' + e.message + '</div>'
-  }
-  setLoading(false)
-}
-
-// ─── UI UTILS ─────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll('.section-panel').forEach(el => el.style.display = 'none')
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.style.background = 'transparent'
-    btn.style.color = 'var(--muted)'
-  })
-  const panel = document.getElementById('tab-' + tab)
-  if (panel) panel.style.display = 'block'
-  const navBtn = document.querySelector(`.nav-btn[data-tab="${tab}"]`)
-  if (navBtn) { navBtn.style.background = 'rgba(249,115,22,0.1)'; navBtn.style.color = 'var(--accent)' }
-  if (tab === 'history' && !historyData.length) loadHistory()
-  if (tab === 'words') renderWordList()
-}
-
-function toast(msg, type = 'ok') {
-  const container = document.getElementById('toast-container')
-  const el = document.createElement('div')
-  el.className = 'toast toast-' + type
-  const icons = {
-    ok: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
-    err: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
-    info: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-  }
-  el.innerHTML = (icons[type] || '') + '<span style="flex:1">' + msg + '</span>'
-  container.appendChild(el)
-  setTimeout(() => {
-    el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = 'all 0.25s'
-    setTimeout(() => el.remove(), 300)
-  }, 3500)
-}
-
-let confirmCb = null
-function showConfirm(title, body, type, cb) {
-  confirmCb = cb
-  document.getElementById('modal-title').textContent = title
-  document.getElementById('modal-body').innerHTML = body
-  const wrap = document.getElementById('modal-icon-wrap')
-  const btn = document.getElementById('modal-confirm-btn')
-  if (type === 'delete') {
-    wrap.style.background = 'rgba(239,68,68,0.12)'; wrap.style.border = '1px solid rgba(239,68,68,0.3)'
-    document.getElementById('modal-icon').setAttribute('stroke', '#f87171'); btn.style.color = '#f87171'
-  } else {
-    wrap.style.background = 'rgba(34,197,94,0.12)'; wrap.style.border = '1px solid rgba(34,197,94,0.3)'
-    document.getElementById('modal-icon').setAttribute('stroke', '#4ade80'); btn.style.color = '#4ade80'
-  }
-  btn.onclick = () => { const cb = confirmCb; closeModal(); if (cb) cb() }
-  document.getElementById('confirm-modal').style.display = 'flex'
-}
-
-function closeModal() {
-  document.getElementById('confirm-modal').style.display = 'none'
-  confirmCb = null
-}
-
-if (checkSession()) {
-  enterApp(false)
-} else {
-  document.getElementById('pin-input').focus()
-}
-function togglePin() {
-  const inp = document.getElementById('pin-input')
-  const eye = document.getElementById('pin-eye')
-  if (inp.type === 'password') {
-    inp.type = 'text'
-    eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
-  } else {
-    inp.type = 'password'
-    eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
-  }
-}
-</script>
+<script src="/public/js/state.js"></script>
+<script src="/public/js/ui.js"></script>
+<script src="/public/js/github.js"></script>
+<script src="/public/js/words.js"></script>
+<script src="/public/js/history.js"></script>
+<script src="/public/js/auth.js"></script>
 </body>
 </html>
