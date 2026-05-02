@@ -1,11 +1,6 @@
 {
-  "functions": {
-    "api/gh.js": { "maxDuration": 15 },
-    "api/config.js": { "maxDuration": 5 }
-  },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
