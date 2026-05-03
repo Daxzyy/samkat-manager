@@ -22,7 +22,8 @@ export default async function handler(req, res) {
   const adminKey = req.headers['x-admin-key']
   if (!adminKey) return res.status(403).json({ error: 'Forbidden' })
 
-  let authorized = adminKey === process.env.ADMIN_KEY
+  const isEnvAdmin = adminKey === process.env.ADMIN_KEY
+  let authorized = isEnvAdmin
 
   if (!authorized) {
     try {
