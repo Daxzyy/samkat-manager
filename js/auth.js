@@ -1,12 +1,10 @@
 async function tryLogin() {
   const pin = document.getElementById('pin-input').value.trim()
   if (!pin) { showPinErr('Masukkan access key dulu'); return }
-
   const errEl = document.getElementById('pin-err')
   const spinner = document.getElementById('login-spinner')
   errEl.style.display = 'none'
   spinner.style.display = 'block'
-
   try {
     const res = await fetch('/api/config', {
       headers: { 'x-admin-key': pin }
@@ -46,6 +44,7 @@ function enterApp(saveSession = true) {
   }
   document.getElementById('lock-screen').style.display = 'none'
   document.getElementById('main-app').style.display = 'flex'
+  document.getElementById('header-username').textContent = App.cfg.username
   const userTab = document.querySelector('.nav-btn[data-tab="users"]')
   if (userTab) userTab.style.display = App.cfg.role === 'admin' ? 'flex' : 'none'
   switchTab('words')
@@ -69,6 +68,7 @@ function logout(manual = true) {
   document.getElementById('main-app').style.display = 'none'
   document.getElementById('lock-screen').style.display = 'flex'
   document.getElementById('pin-input').value = ''
+  document.getElementById('header-username').textContent = ''
   const countEl = document.getElementById('nav-count-history')
   countEl.textContent = ''
   countEl.style.display = 'none'
