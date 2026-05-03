@@ -256,7 +256,12 @@
               Tambah User Baru
             </div>
             <input id="new-user-name" type="text" class="input-field" placeholder="Nama user (huruf & angka)..." style="margin-bottom:10px;">
-            <input id="new-user-pass" type="password" class="input-field" placeholder="Password..." style="margin-bottom:10px;">
+            <div style="position:relative;margin-bottom:10px;">
+  <input id="new-user-pass" type="password" class="input-field" placeholder="Password..." style="padding-right:44px;">
+  <button onclick="toggleNewUserPass()" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;">
+    <svg id="new-user-pass-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  </button>
+</div>
             <select id="new-user-role" class="input-field" style="margin-bottom:14px;">
               <option value="member">Member</option>
               <option value="admin">Admin</option>
