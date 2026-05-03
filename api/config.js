@@ -14,6 +14,10 @@ export default async function handler(req, res) {
   const reqKey = req.headers['x-admin-key']
   if (!reqKey) return res.status(403).json({ error: 'Forbidden' })
 
+  if (reqKey === adminKey) {
+    return res.status(200).json({ filePath, username: 'Admin', role: 'admin' })
+  }
+
   const ghHeaders = {
     'Authorization': `token ${token}`,
     'Accept': 'application/vnd.github.v3+json',
@@ -21,10 +25,7 @@ export default async function handler(req, res) {
 
   try {
     const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/users.json`, { headers: ghHeaders })
-    if (r.status === 404) {
-      if (reqKey !== adminKey) return res.status(403).json({ error: 'Forbidden' })
-      return res.status(200).json({ filePath, username: 'Admin', role: 'admin' })
-    }
+    if (r.status === 404) return res.status(403).json({ error: 'Forbidden' })
     const data = await r.json()
     const users = JSON.parse(Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf8'))
 
