@@ -44,7 +44,19 @@ export default async function handler(req, res) {
 
   out.tests.readDaxzyy = await get('https://api.github.com/repos/Daxzyy/sambungkata/contents/src/db.js')
   out.tests.readGipicihuy = await get('https://api.github.com/repos/gipicihuy/sambungkata-rblx/contents/src/db.js')
-  out.tests.readUsers = await get('https://api.github.com/repos/Daxzyy/sambungkata/contents/users.json')
+
+  const perms = async (full) => {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${full}`, { headers: gh })
+      if (!r.ok) return { status: r.status }
+      const d = await r.json()
+      return { status: r.status, push: (d.permissions || {}).push, admin: (d.permissions || {}).admin }
+    } catch (e) {
+      return { err: e.message }
+    }
+  }
+  out.tests.permDaxzyy = await perms('Daxzyy/sambungkata')
+  out.tests.permGipicihuy = await perms('gipicihuy/sambungkata-rblx')
 
   return res.status(200).json(out)
 }
