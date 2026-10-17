@@ -2,9 +2,9 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
 
   const token = process.env.GITHUB_TOKEN
-  const owner = process.env.GITHUB_OWNER
-  const repo = process.env.GITHUB_REPO
-  const filePath = process.env.DB_FILE_PATH || 'src/db.js'
+  const owner = 'Daxzyy'
+  const repo = 'sambungkata'
+  const filePath = 'src/db.js'
   const adminKey = process.env.ADMIN_KEY
 
   if (!token || !owner || !repo || !adminKey) {

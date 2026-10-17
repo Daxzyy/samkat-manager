@@ -4,10 +4,10 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,x-admin-key')
   if (req.method === 'OPTIONS') return res.status(200).end()
 
-  const owner = process.env.GITHUB_OWNER
-  const repo = process.env.GITHUB_REPO
+  const owner = 'Daxzyy'
+  const repo = 'sambungkata'
   const token = process.env.GITHUB_TOKEN
-  const dbPath = process.env.DB_FILE_PATH || 'src/db.js'
+  const dbPath = 'src/db.js'
 
   if (!owner || !repo || !token) {
     return res.status(500).json({ error: 'Server config incomplete' })

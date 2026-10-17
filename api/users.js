@@ -4,8 +4,8 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,x-admin-key')
   if (req.method === 'OPTIONS') return res.status(200).end()
 
-  const owner = process.env.GITHUB_OWNER
-  const repo = process.env.GITHUB_REPO
+  const owner = 'Daxzyy'
+  const repo = 'sambungkata'
   const token = process.env.GITHUB_TOKEN
   const usersPath = 'users.json'
 
